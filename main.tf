@@ -27,7 +27,6 @@ resource "aws_instance" "app_server" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.21"
 
   name = "example-vpc"
   cidr = "10.0.0.0/16"
