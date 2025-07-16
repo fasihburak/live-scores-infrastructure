@@ -1,3 +1,7 @@
+variable "TFC_AWS_PROVIDER_AUTH" {
+  type = bool
+}
+
 variable "instance_name" {
   description = "Value of the EC2 instance's Name tag."
   type        = string
@@ -9,3 +13,4 @@ variable "instance_type" {
   type        = string
   default     = "t2.micro"
 }
+
