@@ -1,5 +1,15 @@
 variable "TFC_AWS_PROVIDER_AUTH" {
-  type = bool
+  description = "Whether to enable AWS provider authentication for Terraform Cloud."
+  type        = bool
+}
+
+variable "TFC_AWS_RUN_ROLE_ARN" {
+  description = "The ARN of the AWS IAM role that Terraform Cloud will assume."
+  type        = string
+}
+
+variable "AWS_REGION" {
+  type        = string
 }
 
 variable "instance_name" {
