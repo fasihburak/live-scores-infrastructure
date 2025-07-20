@@ -12,15 +12,23 @@ variable "AWS_REGION" {
   type        = string
 }
 
-# variable "instance_name" {
-#   description = "Value of the EC2 instance's Name tag."
-#   type        = string
-#   default     = "learn-terraform"
-# }
+variable "instance_type" {
+  description = "The EC2 instance's type."
+  type        = string
+  default     = "t2.micro"
+}
 
-# variable "instance_type" {
-#   description = "The EC2 instance's type."
-#   type        = string
-#   default     = "t2.micro"
-# }
+variable "aurora_postgres_db_master_username" {
+  type        = string
+  sensitive   = true
+}
 
+variable "aurora_postgres_db_master_password" {
+  type        = string
+  sensitive   = true
+}
+
+variable "my_ip_address" {
+  description = "Your public IP for SSH access"
+  type        = string
+}
