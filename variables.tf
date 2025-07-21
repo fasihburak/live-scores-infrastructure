@@ -32,3 +32,13 @@ variable "my_ip_address" {
   description = "Your public IP for SSH access"
   type        = string
 }
+
+variable "route53_hosted_zone_id" {
+  description = "The Route53 Hosted Zone ID"
+  type        = string
+}
+
+variable "route53_hosted_zone_name" {
+  description = "The Route53 Hosted Zone name (e.g., example.com)"
+  type        = string
+}
