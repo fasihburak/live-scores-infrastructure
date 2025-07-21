@@ -10,9 +10,41 @@ provider "aws" {
   }
 }
 
+resource "aws_acm_certificate" "django_alb" {
+  domain_name       = "livescores-api.${var.route53_hosted_zone_name}"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# When a SSL certificate is requested from AWS Certificate Manager (ACM), 
+# AWS asks you to create special DNS records to prove you own the domain.
+resource "aws_route53_record" "domain_validation_for_django_alb" {
+  for_each = {
+    for dvo in aws_acm_certificate.django_alb.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  zone_id = var.route53_hosted_zone_id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     = 60
+  records = [each.value.record]
+}
+
+resource "aws_acm_certificate_validation" "django_alb" {
+  certificate_arn         = aws_acm_certificate.django_alb.arn
+  validation_record_fqdns = [for record in aws_route53_record.domain_validation_for_django_alb : record.fqdn]
+}
+
 resource "aws_route53_record" "django_alb" {
-  zone_id = var.route53_hosted_zone_id                # Your Route53 hosted zone ID
-  name    = "app.${var.route53_hosted_zone_name}"     # e.g., app.example.com
+  zone_id = var.route53_hosted_zone_id             
+  name    = "livescores-api.${var.route53_hosted_zone_name}"    
   type    = "A"
 
   alias {
@@ -155,16 +187,25 @@ module "alb" {
     }
   ]
 
-  listeners = [
-    {
+  listeners = {
+    http-to-https-redirect = {
       port     = 80
       protocol = "HTTP"
-      default_action = {
-        type               = "forward"
-        target_group_index = 0
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
       }
     }
-  ]
+    https = {
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = aws_acm_certificate.django_alb.arn
+      forward = {
+        target_group_key = "django"
+      }
+    }
+  }
 }
 
 resource "aws_security_group" "ec2_sg" {
@@ -186,15 +227,6 @@ resource "aws_security_group" "ec2_sg" {
     description      = "HTTP from ALB"
     from_port        = 80
     to_port          = 80
-    protocol         = "tcp"
-    security_groups  = [aws_security_group.alb_sg.id]
-  }
-
-  # Allow HTTPS from ALB only
-  ingress {
-    description      = "HTTPS from ALB"
-    from_port        = 443
-    to_port          = 443
     protocol         = "tcp"
     security_groups  = [aws_security_group.alb_sg.id]
   }
