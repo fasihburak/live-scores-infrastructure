@@ -199,7 +199,6 @@ module "alb" {
           status_code = "HTTP_301"
         }
       }
-
     }
     https = {
       port            = 443
