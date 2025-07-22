@@ -215,37 +215,37 @@ module "aurora_postgres" {
 #   ]
 # }
 
-# resource "aws_security_group" "ec2_sg" {
-#   name        = "ec2-instance-sg"
-#   description = "Allow inbound traffic for app"
-#   vpc_id      = module.vpc.vpc_id
+resource "aws_security_group" "ec2_sg" {
+  name        = "ec2-instance-sg"
+  description = "Allow inbound traffic for app"
+  vpc_id      = module.vpc.vpc_id
 
-#   # Allow SSH
-#   ingress {
-#     description = "SSH"
-#     from_port   = 22
-#     to_port     = 22
-#     protocol    = "tcp"
-#     cidr_blocks = ["${var.my_ip_address}/32"]
-#   }
+  # Allow SSH
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${var.my_ip_address}/32"]
+  }
 
-#   # Allow HTTP from ALB only
-#   ingress {
-#     description      = "HTTP from ALB"
-#     from_port        = 80
-#     to_port          = 80
-#     protocol         = "tcp"
-#     security_groups  = [aws_security_group.alb_sg.id]
-#   }
+  # Allow HTTP from ALB only
+  ingress {
+    description      = "HTTP from ALB"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.alb_sg.id]
+  }
 
-#   # Egress — allow all outbound (typical default)
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-# }
+  # Egress — allow all outbound (typical default)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 # module "ec2_instance" {
 #   source  = "terraform-aws-modules/ec2-instance/aws"
