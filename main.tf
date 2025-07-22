@@ -187,8 +187,8 @@ module "alb" {
     }
   ]
 
-  listeners = [
-    {
+  listeners = {
+    http_to_https_redirect = {
       port     = 80
       protocol = "HTTP"
       default_action = {
@@ -199,9 +199,8 @@ module "alb" {
           status_code = "HTTP_301"
         }
       }
-
-    },
-    {
+    }
+    https = {
       port            = 443
       protocol        = "HTTPS"
       certificate_arn = aws_acm_certificate.django_alb.arn
@@ -212,7 +211,7 @@ module "alb" {
         }
       }
     }
-  ]
+  }
 }
 
 resource "aws_security_group" "ec2_sg" {
