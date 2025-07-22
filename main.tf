@@ -191,8 +191,8 @@ module "alb" {
     http-to-https-redirect = {
       port     = 80
       protocol = "HTTP"
-      default_action = {
-        type = "redirect"
+      default_action = {          # ✅ Correct: redirect is inside default_action
+        type     = "redirect"
         redirect = {
           port        = "443"
           protocol    = "HTTPS"
