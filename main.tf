@@ -161,7 +161,8 @@ resource "aws_security_group" "alb_sg" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-
+  version = "9.17.0"
+  
   name               = "django-alb"
   load_balancer_type = "application"
   vpc_id             = module.vpc.vpc_id
@@ -191,14 +192,15 @@ module "alb" {
     http-to-https-redirect = {
       port     = 80
       protocol = "HTTP"
-      default_action = {          # ✅ Correct: redirect is inside default_action
-        type     = "redirect"
+      default_action = {
+        type = "redirect"
         redirect = {
           port        = "443"
           protocol    = "HTTPS"
           status_code = "HTTP_301"
         }
       }
+
     }
     https = {
       port            = 443
