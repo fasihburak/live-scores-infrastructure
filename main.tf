@@ -172,8 +172,8 @@ module "alb" {
   target_groups = {
     django = {
       name_prefix      = "dj"
-      backend_protocol = "HTTP"
-      backend_port     = 80
+      protocol = "HTTP"
+      port     = 80
       target_type      = "instance"
       health_check = {
         path = "/"
