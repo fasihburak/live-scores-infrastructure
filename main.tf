@@ -176,9 +176,9 @@ module "alb" {
       port     = 80
       target_type      = "instance"
       target_id = module.ec2_instance.id
-      # health_check = {
-      #   path = "/"
-      # }
+      health_check = {
+        path = "/"
+      }
     }
  }
 
