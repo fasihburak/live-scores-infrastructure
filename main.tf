@@ -175,40 +175,29 @@ module "alb" {
       protocol = "HTTP"
       port     = 80
       target_type      = "instance"
-      health_check = {
-        path = "/"
-      }
-      targets = [
-        {
-          target_id = module.ec2_instance.id
-          port      = 80
-        }
-      ]
+      target_id = module.ec2_instance.id
+      # health_check = {
+      #   path = "/"
+      # }
     }
  }
 
   listeners = {
-    # http_to_https_redirect = {
-    #   port     = 80
-    #   protocol = "HTTP"
-    #   default_action = {
-    #     type = "redirect"
-    #     redirect = {
-    #       port        = "443"
-    #       protocol    = "HTTPS"
-    #       status_code = "HTTP_301"
-    #     }
-    #   }
-    # }
+    http_to_https_redirect = {
+      port     = 80
+      protocol = "HTTP"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
     https = {
       port            = 443
       protocol        = "HTTPS"
       certificate_arn = aws_acm_certificate.django_alb.arn
-      default_action = {
-        type   = "forward"
-        forward = {
-          target_group_key = "django"
-        }
+      forward = {
+        target_group_key = "django"
       }
     }
   }
