@@ -169,9 +169,9 @@ module "alb" {
 
   security_groups = [aws_security_group.alb_sg.id]
   
-  target_groups = [
-    {
-      name_prefix      = "django"
+  target_groups = {
+    django = {
+      name_prefix      = "dj"
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
@@ -185,7 +185,7 @@ module "alb" {
         }
       ]
     }
-  ]
+ }
 
   listeners = {
     http_to_https_redirect = {
