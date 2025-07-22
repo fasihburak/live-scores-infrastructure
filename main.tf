@@ -201,8 +201,11 @@ module "alb" {
       port            = 443
       protocol        = "HTTPS"
       certificate_arn = aws_acm_certificate.django_alb.arn
-      forward = {
-        target_group_key = "django"
+      default_action = {
+        type   = "forward"
+        forward = {
+          target_group_key = "django"
+        }
       }
     }
   }
