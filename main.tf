@@ -161,8 +161,7 @@ resource "aws_security_group" "alb_sg" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.17.0"
-  
+
   name               = "django-alb"
   load_balancer_type = "application"
   vpc_id             = module.vpc.vpc_id
@@ -188,8 +187,8 @@ module "alb" {
     }
   ]
 
-  listeners = {
-    http-to-https-redirect = {
+  listeners = [
+    {
       port     = 80
       protocol = "HTTP"
       default_action = {
@@ -201,8 +200,8 @@ module "alb" {
         }
       }
 
-    }
-    https = {
+    },
+    {
       port            = 443
       protocol        = "HTTPS"
       certificate_arn = aws_acm_certificate.django_alb.arn
@@ -213,7 +212,7 @@ module "alb" {
         }
       }
     }
-  }
+  ]
 }
 
 resource "aws_security_group" "ec2_sg" {
