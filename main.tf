@@ -1,14 +1,14 @@
-# provider "aws" {
-#   region = "eu-central-1"
+provider "aws" {
+  region = "eu-central-1"
 
-#   default_tags {
-#     tags = {
-#       Project     = "live-scores"
-#       Environment = "dev"
-#       ManagedBy   = "terraform"
-#     }
-#   }
-# }
+  default_tags {
+    tags = {
+      Project     = "live-scores"
+      Environment = "dev"
+      ManagedBy   = "terraform"
+    }
+  }
+}
 
 # resource "aws_acm_certificate" "django_alb" {
 #   domain_name       = "livescores-api.${var.route53_hosted_zone_name}"
@@ -54,18 +54,19 @@
 #   }
 # }
 
-# module "vpc" {
-#   source  = "terraform-aws-modules/vpc/aws"
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
 
-#   name = "live-scores-backend-vpc"
-#   cidr = "10.0.0.0/16"
+  name = "live-scores-backend-vpc"
+  cidr = "10.0.0.0/16"
 
-#   azs             = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
-#   private_subnets = ["10.0.1.0/24",   "10.0.2.0/24",   "10.0.3.0/24"]
-#   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  azs             = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
+  private_subnets = ["10.0.1.0/24",   "10.0.2.0/24",   "10.0.3.0/24"]
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
-#   enable_dns_hostnames    = true
-# }
+  enable_dns_hostnames    = true
+  depends_on = [module.ec2_instance]
+}
 
 # module "aurora_postgres" {
 #   source  = "terraform-aws-modules/rds-aurora/aws"
@@ -96,7 +97,7 @@
 #       source_security_group_id = aws_security_group.ec2_sg.id
 #     }
 #   }
-#   skip_final_snapshot = true
+#   skip_final_snapshot = true # Must be true to destroy automatically
 #   apply_immediately = false
 # }
 
@@ -139,69 +140,67 @@
 #   ]
 # }
 
-# resource "aws_security_group" "alb_sg" {
-#   name        = "alb-sg"
-#   description = "Allow HTTP/HTTPS from the internet"
-#   vpc_id      = module.vpc.vpc_id
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg"
+  description = "Allow HTTP/HTTPS from the internet"
+  vpc_id      = module.vpc.vpc_id
 
-#   ingress {
-#     from_port   = 80
-#     to_port     = 80
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-# }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
-# module "alb" {
-#   source  = "terraform-aws-modules/alb/aws"
+module "alb" {
+  source  = "terraform-aws-modules/alb/aws"
 
-#   name               = "django-alb"
-#   load_balancer_type = "application"
-#   vpc_id             = module.vpc.vpc_id
-#   subnets            = module.vpc.public_subnets
+  name                       = "django-alb"
+  load_balancer_type         = "application"
+  vpc_id                     = module.vpc.vpc_id
+  subnets                    = module.vpc.public_subnets
+  security_groups            = [aws_security_group.alb_sg.id]
+  enable_deletion_protection = false # Must be true to destroy automatically
 
-#   security_groups = [aws_security_group.alb_sg.id]
-  
-#   target_groups = {
-#     django = {
-#       name_prefix      = "dj"
-#       protocol = "HTTP"
-#       port     = 80
-#       target_type      = "instance"
-#       target_id = module.ec2_instance.id
-#       health_check = {
-#         path = "/"
-#       }
-#     }
-#  }
+  target_groups = {
+    django = {
+      name_prefix  = "dj"
+      protocol     = "HTTP"
+      port         = 80
+      target_type  = "instance"
+      target_id    = module.ec2_instance.id
+      health_check = {path = "/"}
+    }
+ }
 
-#   listeners = {
-#     http_to_https_redirect = {
-#       port     = 80
-#       protocol = "HTTP"
-#       redirect = {
-#         port        = "443"
-#         protocol    = "HTTPS"
-#         status_code = "HTTP_301"
-#       }
-#     }
-#     https = {
-#       port            = 443
-#       protocol        = "HTTPS"
-#       certificate_arn = aws_acm_certificate.django_alb.arn
-#       forward = {
-#         target_group_key = "django"
-#       }
-#     }
-#   }
-# }
+  listeners = {
+    http_to_https_redirect = {
+      port     = 80
+      protocol = "HTTP"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+    https = {
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = aws_acm_certificate.django_alb.arn
+      forward = {
+        target_group_key = "django"
+      }
+    }
+  }
+}
 
 # resource "aws_security_group" "ec2_sg" {
 #   name        = "ec2-instance-sg"
