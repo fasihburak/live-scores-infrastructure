@@ -68,7 +68,10 @@ module "vpc" {
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
   enable_dns_hostnames    = true
-  depends_on = [module.ec2_instance]
+  # depends_on = [module.ec2_instance] # This has been necessary to destroy all resources.
+  # Otherwise the error message below was raised.
+  # DependencyViolation: Network vpc-12345 has some mapped public address(es). 
+  # Please unmap those public address(es) before detaching the gateway.
 }
 
 module "aurora_postgres" {
