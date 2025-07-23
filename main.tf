@@ -176,7 +176,7 @@ module "alb" {
       protocol     = "HTTP"
       port         = 80
       target_type  = "instance"
-      # target_id    = module.ec2_instance.id
+      target_id    = module.ec2_instance.id
       health_check = {path = "/"}
     }
  }
@@ -234,14 +234,14 @@ module "alb" {
 #   }
 # }
 
-# module "ec2_instance" {
-#   source  = "terraform-aws-modules/ec2-instance/aws"
-#   name = "django-instance"
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  name = "django-instance"
 
-#   instance_type = var.instance_type
-#   key_name      = "django-instance-keypair"
-#   monitoring    = true
-#   subnet_id     = module.vpc.public_subnets[0]
+  instance_type = var.instance_type
+  key_name      = "django-instance-keypair"
+  monitoring    = true
+  subnet_id     = module.vpc.public_subnets[0]
 
-#   associate_public_ip_address = true
-# }
+  associate_public_ip_address = true
+}
