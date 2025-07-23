@@ -74,6 +74,18 @@ module "vpc" {
   # Please unmap those public address(es) before detaching the gateway.
 }
 
+resource "aws_secretsmanager_secret" "aurora_db_credentials" {
+  name = "aurora-postgres-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "aurora_db_credentials" {
+  secret_id = aws_secretsmanager_secret.aurora_db_credentials.id
+  secret_string = jsonencode({
+    master_username = var.aurora_postgres_db_master_username
+    master_password = var.aurora_postgres_db_master_password
+  })
+}
+
 module "aurora_postgres" {
   source  = "terraform-aws-modules/rds-aurora/aws"
   version = "9.15.0"
