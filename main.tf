@@ -10,49 +10,49 @@ provider "aws" {
   }
 }
 
-# resource "aws_acm_certificate" "django_alb" {
-#   domain_name       = "livescores-api.${var.route53_hosted_zone_name}"
-#   validation_method = "DNS"
+resource "aws_acm_certificate" "django_alb" {
+  domain_name       = "livescores-api.${var.route53_hosted_zone_name}"
+  validation_method = "DNS"
 
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
-# # When a SSL certificate is requested from AWS Certificate Manager (ACM), 
-# # AWS asks you to create special DNS records to prove you own the domain.
-# resource "aws_route53_record" "domain_validation_for_django_alb" {
-#   for_each = {
-#     for dvo in aws_acm_certificate.django_alb.domain_validation_options : dvo.domain_name => {
-#       name   = dvo.resource_record_name
-#       record = dvo.resource_record_value
-#       type   = dvo.resource_record_type
-#     }
-#   }
+# When a SSL certificate is requested from AWS Certificate Manager (ACM), 
+# AWS asks you to create special DNS records to prove you own the domain.
+resource "aws_route53_record" "domain_validation_for_django_alb" {
+  for_each = {
+    for dvo in aws_acm_certificate.django_alb.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
 
-#   zone_id = var.route53_hosted_zone_id
-#   name    = each.value.name
-#   type    = each.value.type
-#   ttl     = 60
-#   records = [each.value.record]
-# }
+  zone_id = var.route53_hosted_zone_id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     = 60
+  records = [each.value.record]
+}
 
-# resource "aws_acm_certificate_validation" "django_alb" {
-#   certificate_arn         = aws_acm_certificate.django_alb.arn
-#   validation_record_fqdns = [for record in aws_route53_record.domain_validation_for_django_alb : record.fqdn]
-# }
+resource "aws_acm_certificate_validation" "django_alb" {
+  certificate_arn         = aws_acm_certificate.django_alb.arn
+  validation_record_fqdns = [for record in aws_route53_record.domain_validation_for_django_alb : record.fqdn]
+}
 
-# resource "aws_route53_record" "django_alb" {
-#   zone_id = var.route53_hosted_zone_id             
-#   name    = "livescores-api.${var.route53_hosted_zone_name}"    
-#   type    = "A"
+resource "aws_route53_record" "django_alb" {
+  zone_id = var.route53_hosted_zone_id             
+  name    = "livescores-api.${var.route53_hosted_zone_name}"    
+  type    = "A"
 
-#   alias {
-#     name                   = module.alb.dns_name   # ALB DNS name output from the ALB module
-#     zone_id                = module.alb.zone_id    # ALB zone ID output from the ALB module
-#     evaluate_target_health = true
-#   }
-# }
+  alias {
+    name                   = module.alb.dns_name   # ALB DNS name output from the ALB module
+    zone_id                = module.alb.zone_id    # ALB zone ID output from the ALB module
+    evaluate_target_health = true
+  }
+}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -65,7 +65,7 @@ module "vpc" {
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
   enable_dns_hostnames    = true
-  depends_on = [module.ec2_instance]
+  # depends_on = [module.ec2_instance]
 }
 
 # module "aurora_postgres" {
@@ -176,7 +176,7 @@ module "alb" {
       protocol     = "HTTP"
       port         = 80
       target_type  = "instance"
-      target_id    = module.ec2_instance.id
+      # target_id    = module.ec2_instance.id
       health_check = {path = "/"}
     }
  }
