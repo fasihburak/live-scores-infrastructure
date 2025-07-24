@@ -127,7 +127,7 @@ module "elasticache" {
   create_replication_group = false
   num_cache_nodes          = 1
 
-  engine_version = "7.1"
+  engine_version = "7.0"
   node_type      = "cache.t4g.micro"
 
   maintenance_window = "sun:04:00-sun:08:00"
