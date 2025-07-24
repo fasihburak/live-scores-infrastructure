@@ -131,7 +131,7 @@ module "elasticache" {
   node_type      = "cache.t4g.micro"
 
   maintenance_window = "sun:04:00-sun:08:00"
-  apply_immediately  = true
+  apply_immediately  = false
 
   # Security group
   vpc_id = module.vpc.vpc_id
