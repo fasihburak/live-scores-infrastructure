@@ -1,6 +1,3 @@
-# Search for this comment to be able change config for prod 
-# Comment: 'Must be true to destroy automatically'
-
 provider "aws" {
   region = "eu-central-1"
 
@@ -74,15 +71,18 @@ module "vpc" {
   # Please unmap those public address(es) before detaching the gateway.
 }
 
-resource "aws_secretsmanager_secret" "aurora_db_credentials" {
-  name = "aurora-postgres-credentials"
+resource "aws_secretsmanager_secret" "livescores_secrets" {
+  name = "django-livescores"
 }
 
-resource "aws_secretsmanager_secret_version" "aurora_db_credentials" {
-  secret_id = aws_secretsmanager_secret.aurora_db_credentials.id
+resource "aws_secretsmanager_secret_version" "livescores_secrets" {
+  secret_id = aws_secretsmanager_secret.livescores_secrets.id
   secret_string = jsonencode({
-    master_username = var.aurora_postgres_db_master_username
-    master_password = var.aurora_postgres_db_master_password
+    DB_HOST = module.aurora_postgres.cluster_endpoint
+    DB_PORT = 5432
+    DB_NAME = "livescores"
+    DB_USERNAME = var.aurora_postgres_db_master_username
+    DB_PASSWORD = var.aurora_postgres_db_master_password
   })
 }
 
