@@ -18,6 +18,12 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
+variable "ami_id" {
+  description = "The AMI ID to use for the EC2 instance."
+  type        = string 
+  default     = "ami-0c1b03e30bca3b373" # AMI for Amazon Linux
+}
+
 variable "aurora_postgres_db_master_username" {
   type        = string
   sensitive   = true

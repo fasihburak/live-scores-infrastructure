@@ -268,6 +268,7 @@ module "ec2_instance" {
   name = "django-instance"
 
   instance_type = var.instance_type
+  ami           = var.ami_id
   key_name      = "django-instance-keypair"
   monitoring    = true
   subnet_id     = module.vpc.public_subnets[0]
