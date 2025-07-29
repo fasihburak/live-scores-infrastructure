@@ -21,7 +21,7 @@ variable "instance_type" {
 variable "ami_id" {
   description = "The AMI ID to use for the EC2 instance."
   type        = string 
-  default     = "ami-0c1b03e30bca3b373" # AMI for Amazon Linux
+  default     = "ami-0a72753edf3e631b7" # AMI for Amazon Linux
 }
 
 variable "aurora_postgres_db_master_username" {
