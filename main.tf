@@ -272,6 +272,13 @@ module "ec2_instance" {
   key_name      = "django-instance-keypair"
   monitoring    = true
   subnet_id     = module.vpc.public_subnets[0]
-
   associate_public_ip_address = true
+  # Install Docker on EC2
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo yum update -y
+    sudo amazon-linux-extras install docker -y
+    sudo service docker start
+    sudo usermod -aG docker ec2-user
+  EOF
 }
