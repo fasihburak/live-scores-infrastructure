@@ -54,6 +54,16 @@ resource "aws_route53_record" "django_alb" {
   }
 }
 
+resource "aws_ecr_repository" "django" {
+  name                 = "livescores/django-backend"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "6.0.1"
