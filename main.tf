@@ -117,7 +117,7 @@ resource "aws_secretsmanager_secret_version" "livescores_secrets" {
     DB_NAME = "livescores"
     DB_USERNAME = var.aurora_postgres_db_master_username
     DB_PASSWORD = var.aurora_postgres_db_master_password
-    REDIS_HOST  = module.elasticache.replication_group_primary_endpoint_address
+    REDIS_HOST  = module.elasticache.global_replication_group_node_groups
     REDIS_PORT  = 6379
   })
 }
