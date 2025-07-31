@@ -85,7 +85,7 @@ resource "aws_iam_role_policy_attachment" "ecr_access_for_ec2" {
 
 resource "aws_iam_instance_profile" "ecr_access_for_ec2" {
   name = "ecr-access-for-ec2-profile"
-  role = aws_iam_role.ecr_access_for_ec2.name
+  role = aws_iam_role.livescores_ec2_role.name
 }
 
 resource "aws_iam_policy" "read_livescores_secrets" {
