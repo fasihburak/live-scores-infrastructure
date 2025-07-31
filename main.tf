@@ -64,8 +64,8 @@ resource "aws_ecr_repository" "django" {
   }
 }
 
-resource "aws_iam_role" "ecr_access_for_ec2" {
-  name = "ECR-Access-for-EC2-Role"
+resource "aws_iam_role" "livescores_ec2_role" {
+  name = "EC2-Role-Livescores"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -79,13 +79,36 @@ resource "aws_iam_role" "ecr_access_for_ec2" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_access_for_ec2" {
-  role       = aws_iam_role.ecr_access_for_ec2.name
+  role       = aws_iam_role.livescores_ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 resource "aws_iam_instance_profile" "ecr_access_for_ec2" {
   name = "ecr-access-for-ec2-profile"
   role = aws_iam_role.ecr_access_for_ec2.name
+}
+
+resource "aws_iam_policy" "read_livescores_secrets" {
+  name        = "SecretsManagerRead"
+  description = "Allow EC2 to read livescores secrets from AWS Secrets Manager"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = aws_secretsmanager_secret.livescores_secrets.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_secretsmanager_read" {
+  role       = aws_iam_role.livescores_ec2_role.name
+  policy_arn = aws_iam_policy.read_livescores_secrets.arn
 }
 
 module "vpc" {
