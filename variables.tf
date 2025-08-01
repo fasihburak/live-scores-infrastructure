@@ -15,7 +15,7 @@ variable "AWS_REGION" {
 variable "instance_type" {
   description = "The EC2 instance's type."
   type        = string
-  default     = "t2.micro"
+  default     = "t2.small"
 }
 
 variable "ami_id" {

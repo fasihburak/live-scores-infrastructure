@@ -252,16 +252,16 @@ module "alb" {
   security_groups            = [aws_security_group.alb_sg.id]
   enable_deletion_protection = false # Must be true to destroy automatically
 
-#   target_groups = {
-#     django = {
-#       name_prefix  = "dj"
-#       protocol     = "HTTP"
-#       port         = 80
-#       target_type  = "instance"
-#       target_id    = module.ec2_instance.id
-#       health_check = {path = "/"}
-#     }
-#  }
+  target_groups = {
+    django = {
+      name_prefix  = "dj"
+      protocol     = "HTTP"
+      port         = 80
+      target_type  = "instance"
+      target_id    = module.ec2_instance.id
+      health_check = {path = "/"}
+    }
+ }
 
   listeners = {
     http_to_https_redirect = {
@@ -316,35 +316,35 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# module "ec2_instance" {
-#   source  = "terraform-aws-modules/ec2-instance/aws"
-#   version = "6.0.2"
-#   name = "django-instance"
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "6.0.2"
+  name = "django-instance"
 
-#   instance_type = var.instance_type
-#   ami           = var.ami_id
-#   key_name      = "django-instance-keypair"
-#   monitoring    = true
-#   metadata_options = {
-#     http_put_response_hop_limit = 2
-#   }
-#   subnet_id     = module.vpc.public_subnets[0]
-#   associate_public_ip_address = true
-#   iam_instance_profile        = aws_iam_instance_profile.ecr_access_for_ec2.name
-#   # Install Docker on EC2
-#   user_data = <<-EOF
-#     #!/bin/bash
-#     # Run these commands automatically
-#     sudo yum update -y
-#     sudo yum install -y docker
-#     sudo service docker start
-#     sudo usermod -aG docker ec2-user
+  instance_type = var.instance_type
+  ami           = var.ami_id
+  key_name      = "django-instance-keypair"
+  monitoring    = true
+  metadata_options = {
+    http_put_response_hop_limit = 2
+  }
+  subnet_id     = module.vpc.public_subnets[0]
+  associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.ecr_access_for_ec2.name
+  # Install Docker on EC2
+  user_data = <<-EOF
+    #!/bin/bash
+    # Run these commands automatically
+    sudo yum update -y
+    sudo yum install -y docker
+    sudo service docker start
+    sudo usermod -aG docker ec2-user
 
-#     # Write setup.sh to /opt/custom_scripts/deploy.sh, but do NOT run it
-#     mkdir -p /opt/custom_scripts
-#     cat <<'SCRIPT' > /opt/custom_scripts/deploy.sh
-# ${file("${path.module}/custom_scripts/deploy.sh")}
-# SCRIPT
-#     chmod +x /opt/custom_scripts/setup.sh
-#   EOF
-# }
+    # Write setup.sh to /opt/custom_scripts/deploy.sh, but do NOT run it
+    mkdir -p /opt/custom_scripts
+    cat <<'SCRIPT' > /opt/custom_scripts/deploy.sh
+${file("${path.module}/custom_scripts/deploy.sh")}
+SCRIPT
+    chmod +x /opt/custom_scripts/setup.sh
+  EOF
+}
