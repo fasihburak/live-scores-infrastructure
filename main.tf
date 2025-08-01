@@ -83,6 +83,11 @@ resource "aws_iam_role_policy_attachment" "ecr_access_for_ec2" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "ssm_for_ec2" {
+  role       = aws_iam_role.livescores_ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+}
+
 resource "aws_iam_instance_profile" "ecr_access_for_ec2" {
   name = "ecr-access-for-ec2-profile"
   role = aws_iam_role.livescores_ec2_role.name
