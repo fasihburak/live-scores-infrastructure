@@ -341,6 +341,11 @@ module "ec2_instance" {
     sudo service docker start
     sudo usermod -aG docker ec2-user
 
-
+    # Write setup.sh to /opt/custom_scripts/deploy.sh, but do NOT run it
+    mkdir -p /opt/custom_scripts
+    cat <<'SCRIPT' > /opt/custom_scripts/deploy.sh
+    ${file("${path.module}/custom_scripts/deploy.sh")}
+    SCRIPT
+    chmod +x /opt/custom_scripts/deploy.sh
   EOF
 }
