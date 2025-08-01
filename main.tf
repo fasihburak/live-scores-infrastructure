@@ -252,16 +252,16 @@ module "alb" {
   security_groups            = [aws_security_group.alb_sg.id]
   enable_deletion_protection = false # Must be true to destroy automatically
 
-  target_groups = {
-    django = {
-      name_prefix  = "dj"
-      protocol     = "HTTP"
-      port         = 80
-      target_type  = "instance"
-      target_id    = module.ec2_instance.id
-      health_check = {path = "/"}
-    }
- }
+#   target_groups = {
+#     django = {
+#       name_prefix  = "dj"
+#       protocol     = "HTTP"
+#       port         = 80
+#       target_type  = "instance"
+#       target_id    = module.ec2_instance.id
+#       health_check = {path = "/"}
+#     }
+#  }
 
   listeners = {
     http_to_https_redirect = {
