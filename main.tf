@@ -320,6 +320,9 @@ module "ec2_instance" {
   ami           = var.ami_id
   key_name      = "django-instance-keypair"
   monitoring    = true
+  metadata_options = {
+    http_put_response_hop_limit = 2
+  }
   subnet_id     = module.vpc.public_subnets[0]
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ecr_access_for_ec2.name
