@@ -345,6 +345,6 @@ module "ec2_instance" {
     cat <<'SCRIPT' > /opt/custom_scripts/deploy.sh
 ${file("${path.module}/custom_scripts/deploy.sh")}
 SCRIPT
-    chmod +x /opt/custom_scripts/setup.sh
+    chmod +x /opt/custom_scripts/deploy.sh
   EOF
 }
