@@ -1,3 +1,3 @@
 echo Starting deploy.sh
-echo abc > abc.txt
+echo ABC > /opt/custom_scripts/abc.txt
 echo Finished deploy.sh
