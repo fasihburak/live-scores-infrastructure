@@ -349,3 +349,82 @@ module "ec2_instance" {
     chmod +x /opt/custom_scripts/deploy.sh
   EOF
 }
+
+# S3 bucket for static assets
+resource "aws_s3_bucket" "static_assets" {
+  bucket = "livescores-static-assets-${random_string.bucket_suffix.result}"
+}
+
+resource "random_string" "bucket_suffix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
+resource "aws_s3_bucket_acl" "static_assets" {
+  bucket = aws_s3_bucket.static_assets.id
+  acl    = "private"
+}
+
+resource "aws_cloudfront_origin_access_identity" "static_assets" {
+  comment = "Access S3 static bucket"
+}
+
+resource "aws_cloudfront_distribution" "static_assets" {
+  origin {
+    domain_name = aws_s3_bucket.static_assets.bucket_regional_domain_name
+    origin_id   = "S3StaticOrigin"
+
+    s3_origin_config {
+      origin_access_identity = "origin-access-identity/cloudfront/${aws_cloudfront_origin_access_identity.static_assets.id}"
+    }
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3StaticOrigin"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+}
+
+resource "aws_s3_bucket_policy" "static_assets" {
+  bucket = aws_s3_bucket.static_assets
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowCloudFrontRead"
+        Effect    = "Allow"
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.static_assets.iam_arn
+        }
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.static_assets.arn}/*"
+      }
+    ]
+  })
+}
