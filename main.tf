@@ -361,11 +361,6 @@ resource "random_string" "bucket_suffix" {
   upper   = false
 }
 
-resource "aws_s3_bucket_acl" "static_assets" {
-  bucket = aws_s3_bucket.static_assets.id
-  acl    = "private"
-}
-
 resource "aws_cloudfront_origin_access_identity" "static_assets" {
   comment = "Access S3 static bucket"
 }
