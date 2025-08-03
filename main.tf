@@ -411,7 +411,7 @@ resource "aws_cloudfront_distribution" "static_assets" {
 }
 
 resource "aws_s3_bucket_policy" "static_assets" {
-  bucket = aws_s3_bucket.static_assets
+  bucket = aws_s3_bucket.static_assets.id
 
   policy = jsonencode({
     Version = "2012-10-17"
