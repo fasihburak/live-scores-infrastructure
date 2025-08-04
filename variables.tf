@@ -48,3 +48,8 @@ variable "route53_hosted_zone_name" {
   description = "The Route53 Hosted Zone name (e.g., example.com)"
   type        = string
 }
+
+variable "DJANGO_SECRET_KEY" {
+  type        = string
+  sensitive   = true
+}
