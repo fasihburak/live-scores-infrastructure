@@ -17,9 +17,12 @@ echo "GITHUB_USERNAME_AND_REPO: $GITHUB_USERNAME_AND_REPO"
 echo "ECR_REPO_URI: $ECR_REPO_URI"
 echo "IMAGE_TAG: $IMAGE_TAG"
 
+# Specify the download path
+DOCKER_SCRIPT_PATH="/home/ec2-user/docker.sh"
+
 # Pull the script from the github repo
-curl -O https://raw.githubusercontent.com/"$1"/main/docker.sh
-chmod +x docker.sh
-./docker.sh $ECR_REPO_URI $ECR_REPO_URI $IMAGE_TAG
+curl -o "$SCRIPT_PATH" https://raw.githubusercontent.com/"$1"/main/docker.sh
+chmod +x "$SCRIPT_PATH"
+"$SCRIPT_PATH" "$ECR_REPO_URI" "$ECR_REPO_URI" "$IMAGE_TAG"
 
 echo Finished run.sh
