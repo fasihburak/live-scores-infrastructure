@@ -353,10 +353,11 @@ module "ec2_instance" {
     # Write custom_scripts/run.sh to /opt/custom_scripts/run.sh, but do NOT run it
     mkdir -p /opt/custom_scripts
     cat <<'SCRIPT' > /opt/custom_scripts/run.sh
+    ${file("${path.module}/custom_scripts/run.sh")}
     SCRIPT
     chmod +x /opt/custom_scripts/run.sh
   EOF
-}
+}   
 
 # S3 bucket for static assets
 resource "aws_s3_bucket" "static_assets" {
