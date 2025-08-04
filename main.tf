@@ -195,11 +195,17 @@ module "aurora_postgres" {
 
   vpc_id              = module.vpc.vpc_id
   subnets             = module.vpc.private_subnets
-
+  
+  # Add instances
+  instances = {
+    one = {}
+  }
+  
   # Aurora needs a subnet group in *at least 2 AZs*
   create_db_subnet_group = true
 
   # Database configuration
+  database_name   = "livescores"
   master_username = var.aurora_postgres_db_master_username
   master_password = var.aurora_postgres_db_master_password
 
