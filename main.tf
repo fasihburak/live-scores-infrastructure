@@ -111,6 +111,38 @@ resource "aws_iam_policy" "read_livescores_secrets" {
   })
 }
 
+# IAM policy for EC2 to access S3
+resource "aws_iam_policy" "s3_access_for_ec2" {
+  name        = "S3AccessForEC2"
+  description = "Allow EC2 to access S3 bucket for static files"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.static_assets.arn,
+          "${aws_s3_bucket.static_assets.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+# Attach S3 policy to existing EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_s3_access" {
+  role       = aws_iam_role.livescores_ec2_role.name
+  policy_arn = aws_iam_policy.s3_access_for_ec2.arn
+}
+
 resource "aws_iam_role_policy_attachment" "ec2_secretsmanager_read" {
   role       = aws_iam_role.livescores_ec2_role.name
   policy_arn = aws_iam_policy.read_livescores_secrets.arn
