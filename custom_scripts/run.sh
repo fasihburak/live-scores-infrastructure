@@ -23,6 +23,6 @@ DOCKER_SCRIPT_PATH="/home/ec2-user/docker.sh"
 # Pull the script from the github repo
 curl -o "$SCRIPT_PATH" https://raw.githubusercontent.com/"$1"/main/docker.sh
 chmod +x "$SCRIPT_PATH"
-"$SCRIPT_PATH" "$ECR_REPO_URI" "$ECR_REPO_URI" "$IMAGE_TAG"
+"$SCRIPT_PATH" "$ECR_REPO_URI" "$IMAGE_TAG"
 
 echo Finished run.sh
