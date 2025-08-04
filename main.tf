@@ -343,7 +343,6 @@ module "ec2_instance" {
   # Install Docker on EC2
   user_data = <<-EOF
     #!/bin/bash
-    echo ERTY > /home/ec2-user/erty.txt
     # Run these commands automatically
     sudo yum update -y
     sudo yum install -y docker
