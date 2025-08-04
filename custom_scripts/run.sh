@@ -13,6 +13,10 @@ GITHUB_USERNAME_AND_REPO="$1"
 ECR_REPO_URI="$2"
 IMAGE_TAG="$3"
 
+echo "GITHUB_USERNAME_AND_REPO: $GITHUB_USERNAME_AND_REPO"
+echo "ECR_REPO_URI: $ECR_REPO_URI"
+echo "IMAGE_TAG: $IMAGE_TAG"
+
 # Pull the script from the github repo
 curl -O https://raw.githubusercontent.com/"$1"/main/docker.sh
 chmod +x docker.sh
