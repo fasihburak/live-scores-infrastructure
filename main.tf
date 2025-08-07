@@ -311,11 +311,6 @@ module "alb" {
       target_id    = module.ec2_instance.id
       health_check = {path = "/health"}
     }
-    # Enable sticky sessions for WebSocket connections
-    stickiness = {
-      enabled = true
-      type    = "lb_cookie"
-    }
  }
 
   listeners = {
