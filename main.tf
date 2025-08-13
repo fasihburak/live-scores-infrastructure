@@ -165,6 +165,11 @@ module "vpc" {
   # Please unmap those public address(es) before detaching the gateway.
 }
 
+import {
+  to = aws_secretsmanager_secret.livescores_secrets
+  id = "arn:aws:secretsmanager:eu-central-1:922178759732:secret:django-livescores-c2xpTh"
+}
+
 resource "aws_secretsmanager_secret" "livescores_secrets" {
   name = "django-livescores"
 }
