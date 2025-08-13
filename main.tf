@@ -173,12 +173,9 @@ resource "aws_secretsmanager_secret_version" "livescores_secrets" {
   secret_id = aws_secretsmanager_secret.livescores_secrets.id
   secret_string = jsonencode({
     DB_HOST = module.aurora_postgres.cluster_endpoint
-    DB_PORT = 5432
-    DB_NAME = "livescores"
     DB_USERNAME = var.aurora_postgres_db_master_username
     DB_PASSWORD = var.aurora_postgres_db_master_password
     REDIS_HOST  = module.elasticache.cluster_cache_nodes[0].address
-    REDIS_PORT  = module.elasticache.cluster_cache_nodes[0].port
     S3_BUCKET_NAME = aws_s3_bucket.static_assets.bucket
     CLOUDFRONT_DOMAIN = aws_cloudfront_distribution.static_assets.domain_name
     DJANGO_SECRET_KEY = var.DJANGO_SECRET_KEY
